@@ -27,7 +27,7 @@ class DeviceError(Exception):
 
 `raise SomeError() from e`
 
-```
+```python
 import traceback
 
 try:
@@ -38,6 +38,8 @@ except Exception as e:
 ```
 
 **1つの経験則は、その場で処理すべき手はない例外を補足しないこと**
+
+https://jisou-programmer.beproud.jp/%E3%82%A8%E3%83%A9%E3%83%BC%E3%83%8F%E3%83%B3%E3%83%89%E3%83%AA%E3%83%B3%E3%82%B0/63-%E8%87%86%E3%81%95%E3%81%9A%E3%81%AB%E3%82%A8%E3%83%A9%E3%83%BC%E3%82%92%E7%99%BA%E7%94%9F%E3%81%95%E3%81%9B%E3%82%8B.html
 
 ## 3.5 コンテキストマネージャ
 
