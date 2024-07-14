@@ -56,3 +56,5 @@ class Sample:
             # ok
         return self
 ```
+
+https://docs.python.org/ja/3/library/contextlib.html#
