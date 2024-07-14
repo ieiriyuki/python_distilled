@@ -1,4 +1,5 @@
 import traceback
+from contextlib import contextmanager
 
 
 def some():
@@ -32,3 +33,18 @@ with MyContext() as c:
 with MyContext() as c:
     print('error')
     raise Exception('foo')
+
+
+@contextmanager
+def my_context(iter=3):
+    print('start')
+    gen = (i for i in range(iter))
+    try:
+        yield gen
+    finally:
+        print('end')
+
+
+with my_context(iter=5) as c:
+    for i in c:
+        print(i)
