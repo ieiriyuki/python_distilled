@@ -46,10 +46,10 @@ class Sample:
     def __init__(self):
         pass
 
-    def __enter(self):
+    def __enter__(self):
         return self
 
-    def __exit(self, type, value, tb):
+    def __exit__(self, type, value, tb):
         if type is None:
             # ok
         return self
