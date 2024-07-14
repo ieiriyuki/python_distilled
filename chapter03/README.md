@@ -41,6 +41,8 @@ except Exception as e:
 
 ## 3.5 コンテキストマネージャ
 
+`with` に入ると `__enter__()` が実行され, 出る時に `__exit__()` が実行される
+
 ```python
 class Sample:
     def __init__(self):
