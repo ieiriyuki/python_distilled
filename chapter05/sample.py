@@ -79,3 +79,63 @@ def after(seconds, func, debug=False, /, *args, **kwargs):
     if debug:
         print(f"Waiting {seconds} seconds")
     func(*args, **kwargs)
+
+
+# 5.17 コールバック関数の返り値
+# その例外は何に起因するのか?
+# after("1", add, 3, 4)  # TypeError in after
+# after(1, add, False, "3", 4)  # TypeError in add
+
+# 1. 個別の例外として処理する
+class CallbackError(Exception):
+    pass
+
+
+def after(seconds, func, debug=False, /, *args, **kwargs):
+    time.sleep(seconds)
+    if debug:
+        print(f"Waiting {seconds} seconds")
+    try:
+        func(*args, **kwargs)
+    except TypeError as e:
+        raise CallbackError("callback failed") from e
+
+
+try:
+    after(1, add, False, "2", 3)
+except Exception as e:
+    print(f"{e}")
+
+
+# 2. 返り値とエラーを両方返す
+# go とか rust っぽい
+# python だと concurrent.futures.Future
+class Result:
+    def __init__(self, value=None, exc=None):
+        self._value = value
+        self._exc = exc
+
+    def result(self):
+        if self._exc:
+            raise self._exc
+        return self._value
+
+
+def after(seconds, func, *args):
+    time.sleep(seconds)
+    try:
+        return Result(value=func(*args))
+    except Exception as e:
+        return Result(exc=e)
+
+
+res = after(1, add, "2", 3)
+try:
+    res.result()
+except Exception as e:
+    print(f"{e}")
+
+
+import inspect
+
+print(inspect.signature(print))
