@@ -95,3 +95,41 @@ https://docs.python.org/ja/3/library/functools.html#functools.reduce
 - 関数の仮引数を知りたいときは `inspect.signature()` を使う
 - シグネチャ: 関数の性質を記述するメタデータ
 - `f.__signature__` にシグネチャオブジェクトを保存することができる
+
+## 5.21 環境インスペクション
+
+- `locals()` の辞書の要素を変更してもその変数に影響を与えることはありません
+- `inspect.currentframe()` スタックフレームを取得
+- `inspect.currentframe().f_back.f_locals` で呼び出し元のスタックフレームを取得
+
+## 5.22 動的なコード実行と生成
+
+- `exec(str, [globals, [, locals]])` で文字列をコードとして実行する
+- 名前空間を渡せる
+- `NamedTuple` や `dataclass` などの標準ライブラリで使われている
+
+## 5.23 非同期関数
+
+async コンテキストマネージャ
+
+```python
+class AsyncManager:
+    def __init__(self, x):
+        self.x = x
+
+    async def yow(self):
+        pass
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self):
+        pass
+
+
+async def main():
+    async with AsyncManager(42) as m:
+        await m.yow()
+
+asyncio.run(main())
+```
