@@ -77,3 +77,51 @@ TypeScript では型チェックってどうなっているんだろう
 - `dict` : `for ty in type(obj).__mro__: dict.get(ty)` する必要あるかも
 - `getattr` : dict のを getattr 使うように変える感じ
 - pattern match : new in 3.10
+
+## 7.21 クラスデコレータ
+
+```python
+_registory = {}
+
+def register_decoder(cls):
+    for mt in cls.mimetypes:
+        _registory[mt] = cls
+    return cls
+
+@register_decoder
+class TextDecorder:
+    mimetypes = ["text/plain"]
+
+    def decode(self, data):
+        pass
+```
+
+既存のメソッドを書き換えることができる
+
+ミックスインや多重継承の代わりによく使う
+
+デコレータが適用されるときに `cls.noise` が1度だけ実行されるため、ミックスインより速い
+
+```python
+def loud(cls):
+    org_noise = cls.noise
+
+    def noise(self):
+        return org_noise(self).upper()
+
+    cls.noise = noise
+    return cls
+
+@loud
+class Cyclist:
+    def noise(self):
+        return "cycle"
+```
+
+ユーティリティなメソッドをいちいち実装するよりデコレータで付与する
+
+see `sample.py`
+
+`exec` で動的にコードを生成すると, Python がモジュールに適用するコンパイル最適化の恩恵を受けられない
+
+この方法で大量にクラスを定義すると, コードのインポートが著しく遅くなる可能性がある
