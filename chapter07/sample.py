@@ -79,3 +79,48 @@ class JSONDecoder(DecoderBase):
         print(data)
 
 DecoderBase._registory["application/json"]().decode('hi')
+
+# 7.23 オブジェクトのライフサイクルとメモリ管理
+# クラスインスタンスを作るときに呼び出される __new__ と __init__ の違い
+
+class Foo:
+    def __new__(cls, name):
+        print(f'__new__ called: {name}')
+        self = super().__new__(cls)
+        return self
+
+    def __init__(self, name):
+        print(f'__init__ called: {name}')
+        self.name = name
+
+
+x = Foo('foo')
+repr(x.name)
+x = Foo.__new__(Foo, 'bar')
+try:
+    repr(x.name)
+except Exception:
+    pass
+
+# https://docs.python.org/ja/3/reference/datamodel.html#basic-customization
+
+# del x や ref count が 0 になったときに __del__ が呼び出される
+# __del__ から伝播した例外は無視される
+# __del__ でロックやリソースを取得する操作を避けるべき
+# __del__ はガベージコレクタによって呼び出されるため, 呼び出されるタイミングは不定
+
+# 7.24 弱参照
+
+import weakref
+
+b = Baz()
+r = weakref.ref(b)
+print(r)
+if x := r():
+    print(x.mixin_method())
+del b
+print(r)
+
+# 弱参照に対応するには, __weakref__ 属性を持つクラスを定義する
+# 組み込み型やタプルなどのデータ構造や __slots__ を使っている場合は __weakref__ 属性を持てない
+# __slots__ を使っている場合は __weakref__ を __slots__ に追加する
