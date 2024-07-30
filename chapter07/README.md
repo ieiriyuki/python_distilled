@@ -132,3 +132,32 @@ see `sample.py`
 - `__class__`
 - `__bases__`
 - `__mro__`
+
+## 7.26 プロキシ, ラッパ, 委譲
+
+- プロキシ: 他のオブジェクトと同じインターフェースを持つオブジェクト
+- 一般的なプロキシの実装には `__getattr__()` を使う
+- 特殊メソッドを利用するには明示的に実装する
+    - `len` なら `__len__()`
+    - `append` なら `__setitem__()`
+
+e.g.
+```python
+class A:
+    def spam(self):
+        print("A.spam")
+
+    def grok(self):
+        print("A.grok")
+
+    def yow(self):
+        print("A.yow")
+
+class LoggedA:
+    def __init__(self):
+        self._a = A()
+
+    def __getattr__(self, name):
+        print("Accessing", name)
+        return getattr(self.a, name)
+```
