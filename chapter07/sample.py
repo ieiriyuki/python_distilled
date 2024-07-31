@@ -241,3 +241,142 @@ r = Rectangle(2, 3)
 print(r.__dict__)
 print(r.area)
 print(r.__dict__)
+
+# 7.30 どう的なクラス生成
+# types.new_class()
+
+import types
+
+def __init__(self, x, y):
+    self.x = x
+    self.y = y
+
+def area(self):
+    return self.x * self.y
+
+def perimeter(self):
+    return 2 * (self.x + self.y)
+
+methods = {
+    '__init__': __init__,
+    'area': area,
+    'perimeter': perimeter,
+}
+# クラス名, 基底クラス, コールバック関数
+DynRectangle = types.new_class('DynRectangle', (), exec_body=lambda ns: ns.update(methods))
+dr = DynRectangle(2, 3)
+print(dr.area())
+print(dr.perimeter())
+
+typed_classes = [
+    ('Integer', int),
+    ('Float', float),
+    ('String', str),
+    ('Bool', bool),
+]
+globals().update(
+    (
+        name,
+        types.new_class(
+            name,
+            (Typed,),
+            exec_body=lambda ns: ns.update({'expected_type': tp})
+        ),
+    )
+    for name, tp in typed_classes
+)
+
+# 7.31 メタクラス
+# クラスを定義すると, クラス定義自体がオブジェクトになる
+# メタクラスはクラスを生成するためのクラス
+# class 文を使った時の処理
+# 1. クラス用の名前空間を作成
+#    namespace = type.__prepare__(name, bases)
+# 2. クラス本体をその名前空間で実行
+#    exec("""blah blah blah""", globals(), namespace)
+# 3. クラスインスタンスを作成
+#    cls = type(name, bases, namespace)
+#
+# metaclass が指定されない場合, 基底クラスのタプルの最初のエントリの型を使う
+# 新しいメタクラスを定義する場合は type を継承する
+# メタクラスには主に __prepare__, __new__, __init__, __call__ を実装する
+class mytype(type):
+    @classmethod
+    def __prepare__(meta, name, bases):
+        """Parameters:
+        meta: メタクラス
+        name: クラス名
+        bases: 基底クラスのタプル
+        """
+        print("Preparing", name, bases)
+        return super().__prepare__(name, bases)
+
+    @staticmethod
+    def __new__(meta, name, bases, namespace):
+        print("Creating", name, bases, namespace)
+        return super().__new__(meta, name, bases, namespace)
+
+    def __init__(cls, name, bases, namespace):
+        print("Initializing", name, bases, namespace)
+        super().__init__(name, bases, namespace)
+
+    def __call__(cls, *args, **kwargs):
+        print("Creating instance: ", args, kwargs)
+        return super().__call__(*args, **kwargs)
+
+class Spam(metaclass=mytype):
+    pass
+
+s = Spam()
+
+# メタクラスの主な用途は, クラス定義の環境や生成プロセスに対して低レベルな制御を提供すること
+# とはいえ __init_subclass__, デコレータ, ディスクリプタ, ミックスインなどで代替できる場合もある
+# メタクラスの使い方の1つに, オブジェクトを生成する前にクラスの名前空間を調整することがある
+# __slots__ のように後で変更できないものを調整するなど
+class SlotsMeta(type):
+    def __new__(meta, name, bases, namespace):
+        if "__init__" in namespace:
+            sig = inspect.signature(methods["__init__"])
+            __slots__ = tuple(sig.parameters)[1:]
+        else:
+            __slots__ = ()
+        namespace["__slots__"] = __slots__
+        return super().__new__(meta, name, bases, namespace)
+
+class Base(metaclass=SlotsMeta):
+    pass
+
+# 基底クラスのメタクラスによって __slots__ が設定される
+class A(Base):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+a = A(1, 2)
+print(a.__slots__)
+
+# クラス定義環境を変更する場合も, メタクラスが有用
+# 同じ名前を複数定義して, 定義が上書きされるのを防ぐ
+class NoDupDict(dict):
+    def __setitem__(self, key, value):
+        if key in self:
+            raise AttributeError(f"{key} already defined")
+        super().__setitem__(key, value)
+
+class NoDupMeta(type):
+    @classmethod
+    def __prepare__(meta, name, bases):
+        return NoDupDict()  # namespace を返す
+
+class Base(metaclass=NoDupMeta):
+    pass
+
+class A(Base):
+    def yow(self):
+        print(1)
+
+    try:
+        def yow(self):
+            print(2)
+    except Exception as e:
+        print(e)
