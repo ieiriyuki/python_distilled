@@ -155,3 +155,17 @@ with open("somefile", "r") as file:
 - `shutil`: シェル操作
 - `select`: 複数の IO ストリームの単純なポーリング
 - `smtplib`: メールのクライアントライブラリ
+- `struct`: python とバイナリデータ構造の間でデータの交換を行う
+- `subprocess`: `run` で結果を受け取れる
+- `tempfile`
+- `textwraps`
+- `threading`: https://docs.python.org/ja/3.12/library/threading.html
+    - daemon フラグでデーモンモードになる
+    - スレッドを終了させたい場合は、フラグ変数などを明示的に作って制御する
+    - 共有データを操作する場合は `Lock` を使う
+    - 別のスレッドの処理を待つ場合は `Event` を使う
+    - スレッド同士が通信する場合は `Queue` を使う
+- `time`
+- `urllib`: ごく簡単な操作でなければ `requests` や `httpx` を使うべき
+- `unicodedata`: ノーマライズしたり、プロパティ調べたり
+- `xml`: `from xml.etree.ElementTree import ElementTree; doc = ElementTree(file="recipe.xml")` で基本的な読み取りができる
