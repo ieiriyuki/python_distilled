@@ -74,3 +74,57 @@ for chunk in lines:
 `__setstate__()` が返す値を使って脱直列化する
 
 脱直列化された先のクラスの用意, 安全性を利用者側が注意する必要がある
+
+## 9.14 ブロッキングと並行処理
+
+- ソケットでノンブロッキング IO を使う場合は `sock.setblocking(False)` にする
+- ブロックされた場合 `BlockingIOError` が出る
+- IO ポーリング: 例外処理やビジーループに頼らずにデータの有無を確認できる
+    - `select` や `selectors` モジュールを使う
+
+```python
+from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
+
+def run(sock1, sock2):
+    selector = DefaultSelector()
+    selector.register(sock1, EVENT_READ, data=func1)
+    selector.register(sock2, EVENT_READ, data=func2)
+    while True:
+        for key, evt in selector.select():
+            func = key.data
+            func(key.fileobj)
+```
+
+スレッドを使う場合
+
+```python
+import threading
+
+t1 = threading.Thread(target=func1, args=[])
+t2 = threading.Thread(target=func2, args=[])
+t1.start()  # スレッド開始
+t2.start()
+t1.join()  # 完了待ち
+t2.join()
+```
+
+`asyncio`
+
+```python
+import asyncio
+
+async def func1():
+    pass
+
+async def func2():
+    pass
+
+async def main():
+    loop = asyncio.get_event_loop()
+    t1 = loop.create_task(func1())
+    t2 = loop.create_task(func2())
+    await t1
+    await t2
+
+asyncio.run(main())
+```
