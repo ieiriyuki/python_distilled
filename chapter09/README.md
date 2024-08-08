@@ -128,3 +128,30 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## 9.15 I/O 標準ライブラリ
+
+- `configparser`
+- `csv`
+- `errno`: エラーの番号を検証する
+    - `except OSError as e: e.errno == errno.ENOSPC`
+
+```python
+import fcntl  # unix 上で fcntl や ioctl システムコールを使って低レベルの IO 制御をする
+# 並行処理や分散システムでロックをする時にも使う
+with open("somefile", "r") as file:
+    try:
+        fcntl.flock(file.fileno(), fcntl.LOCK_EX)
+    finally:
+        fcntl.flock(file.fileno(), fcntl.LOCK_UN)
+```
+
+- `http`: `python -m http.server`
+- `io`: ファイルオブジェクトをなんやかんやできる
+- `json`
+- `logging`
+- `os` もあるけど `pathlib` の方が便利
+- `re`
+- `shutil`: シェル操作
+- `select`: 複数の IO ストリームの単純なポーリング
+- `smtplib`: メールのクライアントライブラリ
