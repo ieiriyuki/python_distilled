@@ -64,3 +64,13 @@ f.writelines(lines)
 for chunk in lines:
     s.sendall(chunk.encode("utf-8"))
 ```
+
+## 9.13 直列化
+
+状態を保持する必要があるオブジェクトを `pickle` するには `__getstate__()` と `__setstate__()` を実装する
+
+`__getstate__()` はオブジェクトの状態を表す値を返す
+
+`__setstate__()` が返す値を使って脱直列化する
+
+脱直列化された先のクラスの用意, 安全性を利用者側が注意する必要がある

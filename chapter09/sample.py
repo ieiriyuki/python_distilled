@@ -35,7 +35,7 @@ fout = open("./bar.txt", "wt")
 fout.write("aaa")
 input(1) # この時点では aaa はファイルに書き込まれていない
 fout.flush() # バッファをフラッシュする
-input(2) # この時点で aaa はファイルに書き込まれている
+# この時点で aaa はファイルに書き込まれている
 fout.close()
 
 # 9.11 ジェネレータ関数による出力
@@ -93,3 +93,19 @@ while True:
     if line.decode().strip() == "baz":
         break
 fin.close()
+
+# 9.13
+class Serializable:
+    def __getstate__(self):
+        return {"data": "serialized data"}
+
+    def __setstate__(self, state):
+        return {"data": "recovered"}
+
+import pickle
+
+s = Serializable()
+filename = "serialized"
+pickle.dump(s, open(filename, "wb"))
+c = pickle.load(open(filename, "rb"))
+print(c)
