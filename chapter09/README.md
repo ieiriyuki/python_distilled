@@ -1,10 +1,28 @@
 # 入力と出力
 
+## 9.1 データの表現
 - `bytes`: immutable
 - `bytearray`: mutable
+- `sample.py`
+
+## 9.2 テキストのエンコードとデコード
+- `str.encode()`, `str.decode()`
 - `surrogateescape`: 期待されるエンコーディングに従わないバイトデータでも、エンコード、デコード可能
     - 特定のエンコーディングを保証できない時に有用
 - バイト列を渡す方法は、正しくエンコードされていない可能性があるファイルを渡す場合などで有用
+
+## 9.3 テキストとバイトの書式設定
+f string, format, %s
+
+## 9.4 コマンドラインオプション
+`sys.argv`, `argparse`, `click`
+
+## 9.5 環境変数
+`os`
+
+## 9.6 ファイルとファイルオブジェクト
+- `sample.py`
+- `open`
 - `__fspath__()` が実装されたオブジェクトもファイル名として渡せる
     - `pathlib` を使う際に必要となる
     - `sample.py`
@@ -25,6 +43,8 @@
 - `errors` にエラー処理を指定できる
 - `newline` 引数で改行を指定できる
     - ユニバーサル改行モードで `\n` に変換する
+
+## 9.7 I/O の抽象化層
 - `io` クラス
     - `FileIO`
     - `BufferedReader`, `*Writer`, `*Random`
@@ -48,11 +68,17 @@
     - `f.encoding`
     - `f.errors`: エンコーディングのエラー処理の設定
     - `f.write_through`: バッファリングの有無
+
+## 9.8 標準入力、標準出力、標準エラー
+## 9.9 ディレクトリ
 - `os.scandir`: ディレクトリにあるファイルの一覧
     - `pathlib.Path.glob`: マッチするファイル名を返すジェネレータを返す
     - `pathlib.Path.rglob`: 再起的にファイルを探索
 
+## 9.10 print() 関数
 ## 9.11 ジェネレータ関数による出力
+## 9.12 ジェネレータ関数による入力
+`sample.py`
 
 ファイルオブジェクトに書き込む処理と、出力するオブジェクト生成の処理を分離できる
 
@@ -66,6 +92,7 @@ for chunk in lines:
 ```
 
 ## 9.13 直列化
+`sample.py`
 
 状態を保持する必要があるオブジェクトを `pickle` するには `__getstate__()` と `__setstate__()` を実装する
 
@@ -131,10 +158,13 @@ asyncio.run(main())
 
 ## 9.15 I/O 標準ライブラリ
 
+- `asyncio`: `asyncio_sample.py`
+- `binascii`: `binascii_sample.py`
 - `configparser`
 - `csv`
 - `errno`: エラーの番号を検証する
     - `except OSError as e: e.errno == errno.ENOSPC`
+- `fcntl`
 
 ```python
 import fcntl  # unix 上で fcntl や ioctl システムコールを使って低レベルの IO 制御をする
@@ -154,7 +184,8 @@ with open("somefile", "r") as file:
 - `re`
 - `shutil`: シェル操作
 - `select`: 複数の IO ストリームの単純なポーリング
-- `smtplib`: メールのクライアントライブラリ
+- `smtplib`: メールのクライアントライブラリ, `smtplib_sample.py`
+- `socket`: `socket_*.py`
 - `struct`: python とバイナリデータ構造の間でデータの交換を行う
 - `subprocess`: `run` で結果を受け取れる
 - `tempfile`
